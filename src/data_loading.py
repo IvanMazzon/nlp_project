@@ -38,6 +38,7 @@ class ProofWriterDataset(Dataset):
         depths_list = []
 
         proofs_intermediates_key = "proofsWithIntermediates"
+
         for i in data:
             triples = {}
             rules = {}
@@ -54,6 +55,9 @@ class ProofWriterDataset(Dataset):
                 rules[r] = val["text"]
 
             for q in i[questions_key].values():
+
+                if q["answer"] == "Unknown": continue
+
                 questions.append(q["question"])
                 if proofs_intermediates_key in q:
                     tmp_proof = []
@@ -65,6 +69,7 @@ class ProofWriterDataset(Dataset):
                             for intr, val in p["intermediates"].items():
                                 str_proof += f"{intr} = {val['text']}"
                         tmp_proof.append(str_proof)
+                        break
 
                 labels.append(q["answer"])
                 proofs.append(q["proofs"])
@@ -108,8 +113,9 @@ class ProofWriterDataset(Dataset):
                 + reduce(f, self.rules[index].items(), "")
 
         label = str(self.labels[index])
-        proof = self.proofs_intermerdiates[index]
+        proof = self.proofs_intermerdiates[index][0]
 
+        """
         input_text = f"Question: {question}. Context: {context}"
         target_text = f"{label}. Proof: {proof}"
 
@@ -137,6 +143,34 @@ class ProofWriterDataset(Dataset):
             "attention_mask": input_encoding["attention_mask"].squeeze(0),
             "labels": labels
         }
+        """
+
+        return {
+            "context" : context,
+            "question" : question,
+            "label" : label,
+            "proof" : proof
+        }
 
     def __len__(self):
-        return len(self.questions) // 10
+        return len(self.questions)
+    
+
+def build_prompt(elem):
+    return "\n".join([
+        "Given the following theory of logic rules, answer the question given the result as true or false. Do not generate other text.\n",
+        elem["context"],
+        elem["question"]
+    ])
+
+def build_one_shot_prompt(current_elem, example_elem):
+    return "\n".join([
+        "I'll show you an example of answering a query given a theory of logical statements, then I'll ask you to answer a new query.",
+        "Context: " + example_elem["context"],
+        "Question: " + example_elem["question"],
+        example_elem["label"],
+        # "Proof: " + example_elem["proof"],
+        "\nNow, given the following theory, answer the question. You must respond with **only** 'True' or 'False' — no explanation, no punctuation, no extra text.\n",
+        "Context: " + current_elem["context"],
+        "Question: " + current_elem["question"]
+    ])
