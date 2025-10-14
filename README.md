@@ -18,3 +18,6 @@ pipenv shell
 ```
 
 Finally, execute the Jupyter Notebook file using the Python kernel in `.venv/bin/python`.
+
+
+https://copilot.microsoft.com/shares/6pJ76icAk56RZFaK6uhah

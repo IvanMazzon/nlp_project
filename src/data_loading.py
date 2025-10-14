@@ -154,23 +154,3 @@ class ProofWriterDataset(Dataset):
 
     def __len__(self):
         return len(self.questions)
-    
-
-def build_prompt(elem):
-    return "\n".join([
-        "Given the following theory of logic rules, answer the question given the result as true or false. Do not generate other text.\n",
-        elem["context"],
-        elem["question"]
-    ])
-
-def build_one_shot_prompt(current_elem, example_elem):
-    return "\n".join([
-        "I'll show you an example of answering a query given a theory of logical statements, then I'll ask you to answer a new query.",
-        "Context: " + example_elem["context"],
-        "Question: " + example_elem["question"],
-        example_elem["label"],
-        # "Proof: " + example_elem["proof"],
-        "\nNow, given the following theory, answer the question. You must respond with **only** 'True' or 'False' — no explanation, no punctuation, no extra text.\n",
-        "Context: " + current_elem["context"],
-        "Question: " + current_elem["question"]
-    ])
