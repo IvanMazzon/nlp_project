@@ -12,9 +12,9 @@ def read_jsonl(dataset_path: str):
 
 class ProofWriterDataset(Dataset):
 
-    def __init__(self, tokenizer, dataset_name, dataset_path="dataset/OWA/"):
+    def __init__(self, tokenizer, dataset_path):
         self.tokenizer = tokenizer
-        self.dataset_path = dataset_path + dataset_name
+        self.dataset_path = dataset_path
 
         (
             self.triples,
