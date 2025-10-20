@@ -21,3 +21,13 @@ Finally, execute the Jupyter Notebook file using the Python kernel in `.venv/bin
 
 
 https://copilot.microsoft.com/shares/6pJ76icAk56RZFaK6uhah
+
+
+For externally managed Python installation:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pipenv
+pipenv install
+pipenv shell
+```
