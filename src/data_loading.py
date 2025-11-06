@@ -12,9 +12,11 @@ def read_jsonl(dataset_path: str):
 
 class ProofWriterDataset(Dataset):
 
-    def __init__(self, tokenizer, dataset_path):
+    def __init__(self, tokenizer, dataset_path, triple_label="triple", rule_label="rule"):
         self.tokenizer = tokenizer
         self.dataset_path = dataset_path
+        self.triple_label = triple_label
+        self.rule_label = rule_label
 
         (
             self.triples,
@@ -49,10 +51,12 @@ class ProofWriterDataset(Dataset):
             depths = []
 
             for t, val in i[triples_key].items():
-                triples[t] = val["text"]
+                key = self.triple_label + t.replace("triple", "")
+                triples[key] = val["text"]
 
             for r, val in i[rules_key].items():
-                rules[r] = val["text"]
+                key = self.rule_label + r.replace("rule", "")
+                rules[key] = val["text"]
 
             for q in i[questions_key].values():
 
@@ -68,17 +72,17 @@ class ProofWriterDataset(Dataset):
                             str_proof += "with "
                             for intr, val in p["intermediates"].items():
                                 str_proof += f"{intr} = {val['text']}"
+                        str_proof = str_proof.replace("triple", self.triple_label)
+                        str_proof = str_proof.replace("rule", self.rule_label)
                         tmp_proof.append(str_proof)
-                        break
+                        break # temporary, taking only one proof
 
                 labels.append(q["answer"])
                 proofs.append(q["proofs"])
                 proofs_intermediates.append(tmp_proof)
                 depths.append(q["QDep"])
 
-            for q, l, p, p_i, d in zip(
-                questions, labels, proofs, proofs_intermediates, depths
-            ):
+            for q, l, p, p_i, d in zip(questions, labels, proofs, proofs_intermediates, depths):
                 triples_list.append(triples)
                 rules_list.append(rules)
                 questions_list.append(q)
@@ -111,7 +115,7 @@ class ProofWriterDataset(Dataset):
         f = lambda acc, e: acc + f"{e[0]}: {e[1]} "
         context = reduce(f, self.triples[index].items(), "") \
                 + reduce(f, self.rules[index].items(), "")
-
+        
         label = str(self.labels[index])
         proof = self.proofs_intermerdiates[index][0]
 

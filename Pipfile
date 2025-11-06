@@ -10,15 +10,17 @@ iprogress = "*"
 notebook = "*"
 jupyterlab = "*"
 
-transformers = "4.49.0"
+transformers = "4.53.0"
 torch = "2.5.1"
 accelerate = "1.3.0"
 bitsandbytes="0.48.1"
+protobuf="*"
+sentencepiece="*"
 
 scikit-learn = "1.7.2"
 matplotlib = "3.10.6"
 cycler = "0.12.1"
-torchao = "*"
+torchao = "0.12.0"
 seaborn = "*"
 
 [dev-packages]
