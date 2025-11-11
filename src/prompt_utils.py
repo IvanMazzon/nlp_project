@@ -31,38 +31,57 @@ def build_prompt(elem):
 
 
 def build_one_shot_prompt(current_elem, examples, proof=False):
-    """Examples must be taken from the same theory """
+    """Examples must be taken from the same theory."""
     
     add_index = lambda x, i: x + "_" + str(i+1)
     
     prompt_examples = [[
-        (add_index("example_introduction", i), f"Example {i+1}:"),
+        (add_index("example_introduction", i), f"Example:"),
         (add_index("example_theory", i), "Theory:\n" + e["context"]),
         (add_index("example_question", i), f"Question:\n{e['question']}"),
         (add_index("example_answer", i), f"Answer:"),
-        (add_index("example_label", i), e["label"]),
-        (add_index("example_proof", i), e["proof"] + "\n") if proof else (None, )
+        (add_index("example_label", i), "<final>" + e["label"] + "</final>"),
+        (add_index("example_proof", i), "<reasoning>" + e["proof"] + "</reasoning>\n") if proof else (None, )
     ] for i, e in enumerate(examples)]
 
     
+    special_tags_instruction = \
+    """
+Produce two levels of output:
+  1. Write the final answer (only one word: True or False) inside <final>...</final>.
+  2. Write the proof or reasoning, formatted as in the example, inside <reasoning>...</reasoning>.
+
+Proof selection rules:
+- First, check if the conclusion follows directly from a single fact tX.
+- If a single-step proof exists, use ONLY that step. Do not add any extra derivations.
+- If a single-step proof does NOT exist, use the shortest valid chain.
+- Avoid unnecessary steps or complex derivations. Prefer the shortest chain of rules.
+
+Output format (use exactly these tags, no extra symbols):
+<final>True | False</final>
+<reasoning>proof here</reasoning>
+Here is an example.\n"""
+
+    # simplest_proof_instruction = "When writing the reasoning, always choose the simplest valid proof. Avoid unnecessary steps or complex derivations."
 
     prompt_head = [
-        ("preamble", "You will be shown some examples of questions and answers based on a logic theory. Your task is to evaluate a question based on a new theory.\nRespond with only one word: either True or False. " \
-             + ("Do not include punctuation, explanation, or any other text.\n" if not proof else "Include the proof of your answer, formatted as the example.\n")),
+        ("preamble", "You will be shown a logic theory and a logic question." \
+            # + ("Do not include punctuation, explanation, or any other text.\n" if not proof else "Include the proof of your answer, formatted as the example.\n")),
+            + special_tags_instruction)
     ]
 
     prompt_tail = [
         ("instruction", "Now, evaluate the following."),
         ("theory", f"Theory:\n{current_elem["context"]}"),
-        ("question", f"Question:\n{current_elem["question"]}"),
-        ("answer", f"Answer:\n")
+        ("question", f"Question:\n{current_elem["question"]}\n"),
+        # ("answer", f"Answer:\n")
     ]
 
-    prompt_segmentation = dict([*prompt_head, *sum(prompt_examples, []), *prompt_tail])
+    prompt_segmentation = dict([*prompt_head, *prompt_tail]) # *sum(prompt_examples, [])
 
     prompt_segmentation.pop(None, None)
 
-    print(prompt_segmentation)
+    # print(prompt_segmentation)
 
     prompt_text = "\n".join(prompt_segmentation.values())
 
@@ -71,14 +90,14 @@ def build_one_shot_prompt(current_elem, examples, proof=False):
     pos_theory_starts = prompt_text.index(current_elem["context"])
     theory_segmentation = reduce(lambda acc, x: acc + [acc[-1] + len(x) + len(sep)], tuples_and_rules, [pos_theory_starts])[:-1]
 
-    print(current_elem["context"])
-    print(len(current_elem["context"]))
-    print(theory_segmentation)
+    # print(current_elem["context"])
+    # print(len(current_elem["context"]))
+    # print(theory_segmentation)
 
-    for i in range(len(theory_segmentation)-1):
-        print(i, prompt_text[theory_segmentation[i] : theory_segmentation[i+1]])
+    # for i in range(len(theory_segmentation)-1):
+    #    print(i, prompt_text[theory_segmentation[i] : theory_segmentation[i+1]])
     
-    print()
+    # print()
 
     i = 0
     for k, v in prompt_segmentation.items():
