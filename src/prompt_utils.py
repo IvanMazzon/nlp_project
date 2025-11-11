@@ -53,14 +53,9 @@ Produce two levels of output:
 
 Proof selection rules:
 - First, check if the conclusion follows directly from a single fact tX.
-- If a single-step proof exists, use ONLY that step. Do not add any extra derivations.
+- If a single-step proof exists, use ONLY that step.
 - If a single-step proof does NOT exist, use the shortest valid chain.
-- Avoid unnecessary steps or complex derivations. Prefer the shortest chain of rules.
-
-Output format (use exactly these tags, no extra symbols):
-<final>True | False</final>
-<reasoning>proof here</reasoning>
-Here is an example.\n"""
+- Avoid unnecessary steps or complex derivations. Prefer the shortest chain of rules.\n"""
 
     # simplest_proof_instruction = "When writing the reasoning, always choose the simplest valid proof. Avoid unnecessary steps or complex derivations."
 

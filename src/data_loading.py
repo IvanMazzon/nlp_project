@@ -1,4 +1,5 @@
 from torch.utils.data import Dataset
+import copy
 
 import json
 from functools import reduce
@@ -41,7 +42,7 @@ class ProofWriterDataset(Dataset):
 
         proofs_intermediates_key = "proofsWithIntermediates"
 
-        for i in data:
+        for i, e in enumerate(data):
             triples = {}
             rules = {}
             questions = []
@@ -50,15 +51,15 @@ class ProofWriterDataset(Dataset):
             labels = []
             depths = []
 
-            for t, val in i[triples_key].items():
+            for t, val in e[triples_key].items():
                 key = self.triple_label + t.replace("triple", "")
                 triples[key] = val["text"]
 
-            for r, val in i[rules_key].items():
+            for r, val in e[rules_key].items():
                 key = self.rule_label + r.replace("rule", "")
                 rules[key] = val["text"]
 
-            for q in i[questions_key].values():
+            for q in e[questions_key].values():
 
                 if q["answer"] == "Unknown": continue
 
@@ -109,6 +110,12 @@ class ProofWriterDataset(Dataset):
         )
 
     def __getitem__(self, index):
+
+        if type(index) == slice:
+            res = []
+            for i in range(*index.indices(len(self))):
+                res.append(self[i])
+            return res
 
         question = self.questions[index]
 
