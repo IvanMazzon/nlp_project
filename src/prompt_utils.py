@@ -30,21 +30,8 @@ def build_prompt(elem):
     ])
 
 
-def build_one_shot_prompt(current_elem, examples, proof=False):
-    """Examples must be taken from the same theory."""
-    
-    add_index = lambda x, i: x + "_" + str(i+1)
-    
-    prompt_examples = [[
-        (add_index("example_introduction", i), f"Example:"),
-        (add_index("example_theory", i), "Theory:\n" + e["context"]),
-        (add_index("example_question", i), f"Question:\n{e['question']}"),
-        (add_index("example_answer", i), f"Answer:"),
-        (add_index("example_label", i), "<final>" + e["label"] + "</final>"),
-        (add_index("example_proof", i), "<reasoning>" + e["proof"] + "</reasoning>\n") if proof else (None, )
-    ] for i, e in enumerate(examples)]
+def __build_base_prompt(current_elem, proof=False):
 
-    
     special_tags_instruction = \
     """
 Produce two levels of output:
@@ -69,12 +56,29 @@ Proof selection rules:
         ("instruction", "Now, evaluate the following."),
         ("theory", f"Theory:\n{current_elem["context"]}"),
         ("question", f"Question:\n{current_elem["question"]}\n"),
-        # ("answer", f"Answer:\n")
+        ("answer", f"Answer:\n")
     ]
 
-    prompt_segmentation = dict([*prompt_head, *prompt_tail]) # *sum(prompt_examples, [])
+    return prompt_head, prompt_tail
 
-    prompt_segmentation.pop(None, None)
+
+def build_few_shot_prompt(current_elem, examples, proof=False):
+    """Examples must be taken from the same theory."""
+    
+    add_index = lambda x, i: x + "_" + str(i+1)
+    
+    prompt_examples = [[
+        (add_index("example_introduction", i), f"Example:"),
+        (add_index("example_theory", i), "Theory:\n" + e["context"]),
+        (add_index("example_question", i), f"Question:\n{e['question']}"),
+        (add_index("example_answer", i), f"Answer:"),
+        (add_index("example_label", i), "<final>" + e["label"] + "</final>"),
+        (add_index("example_proof", i), "<reasoning>" + e["proof"] + "</reasoning>\n") if proof else (None, )
+    ] for i, e in enumerate(examples)]
+
+    prompt_head, prompt_tail = __build_base_prompt(current_elem, proof)
+    prompt_segmentation = dict([*prompt_head, *sum(prompt_examples, [("examples_preamble", "Here is an example.\n" if len(examples) == 1 else "Here are some examples.\n")]), *prompt_tail])
+    prompt_segmentation.pop(None, None) # remove proof entries when proof is false
 
     # print(prompt_segmentation)
 
