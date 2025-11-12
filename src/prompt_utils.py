@@ -20,6 +20,9 @@ def get_groups_delimiter_intervals_by_tokens(groups_delimiters_by_characters, of
     groups_intervals = to_couples(groups_delimiters_by_tokens)
     return groups_intervals
 
+def str_bool_to_bin(b):
+    if b not in ["True", "False"]: raise Exception(f"The input must be True of False; '{b}' received.")
+    return int(b == "True")
 
 
 def build_prompt(elem):
