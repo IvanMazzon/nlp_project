@@ -1,5 +1,6 @@
+# **Analysis of the role of attention and prompt engineering in decoder-only transformers logical reasoning**
 
-
+[![coursePage](https://img.shields.io/badge/University_of_Milan-Natural_Language_Processing-dae1e7?style=for-the-badge&logoColor=white&labelColor=004082)](https://www.unimi.it/en/education/degree-programme-courses/2025/natural-language-processing)
 
 ## Requirements
 
@@ -18,9 +19,6 @@ pipenv shell
 ```
 
 Finally, execute the Jupyter Notebook file using the Python kernel in `.venv/bin/python`.
-
-
-https://copilot.microsoft.com/shares/6pJ76icAk56RZFaK6uhah
 
 
 For externally managed Python installation:
