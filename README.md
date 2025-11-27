@@ -1,6 +1,7 @@
-# **Analysis of the role of attention and prompt engineering in decoder-only transformers logical reasoning**
-
 [![coursePage](https://img.shields.io/badge/University_of_Milan-Natural_Language_Processing-dae1e7?style=for-the-badge&logoColor=white&labelColor=004082)](https://www.unimi.it/en/education/degree-programme-courses/2025/natural-language-processing)
+
+# **Analysis of the role of attention and prompt engineering in logical reasoning with decoder-only transformers**
+
 
 ## Requirements
 

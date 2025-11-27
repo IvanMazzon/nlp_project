@@ -6,7 +6,9 @@ def get_groups_delimiters_by_tokens(groups_delimiters_by_characters, offsets):
     groups_delimiters_by_tokens = []
     for gi in groups_delimiters_by_characters:
         while offsets[j][1] < gi: j += 1
-        groups_delimiters_by_tokens.append(j)
+
+        if len(groups_delimiters_by_tokens) <= 1 or j != groups_delimiters_by_tokens[-1]:
+            groups_delimiters_by_tokens.append(j)
     
     return groups_delimiters_by_tokens
 

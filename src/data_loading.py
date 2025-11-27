@@ -60,8 +60,8 @@ class ProofWriterDataset(Dataset):
                 rules[key] = val["text"]
 
             for q in e[questions_key].values():
-
-                if q["answer"] == "Unknown": continue
+                
+                if not isinstance(q["answer"], bool): continue
 
                 questions.append(q["question"])
                 if proofs_intermediates_key in q:
