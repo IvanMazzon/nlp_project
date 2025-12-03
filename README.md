@@ -2,6 +2,14 @@
 
 # **Analysis of the role of attention and prompt engineering in logical reasoning with decoder-only transformers**
 
+This project examines the ability of a large language model (LLM) to perform logical reasoning
+by analyzing the attention mechanisms within a decoder-only transformer architecture.
+The model is provided with instances composed by a theory and a logical proposition, and tasked with determining whether the proposition is true or false.
+The central hypothesis is that, when the model produces the correct answer, it allocates greater attention
+to the actual most relevant portions of the input, particularly the logical statements that support the reasoning process.
+The second aspect is to evaluate the impact of different prompting techniques on the ability of the model
+to classify logical propositions, as well as on the attention distribution.
+
 
 ## Requirements
 
